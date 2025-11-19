@@ -2,9 +2,25 @@
 set -ex
 
 # Install Solvespace
-pwd
-ls -alh
-tar -xvf $INST_SCRIPTS/solvespace/solvespace.tgz -C /
+apt update
+apt install -y git build-essential cmake zlib1g-dev libpng-dev \
+    libcairo2-dev libfreetype6-dev libjson-c-dev \
+    libfontconfig1-dev libgtkmm-3.0-dev libpangomm-1.4-dev \
+    libgl-dev libglu-dev libspnav-dev
+echo "Cloning solvespace source..."
+git clone https://github.com/solvespace/solvespace
+cd solvespace
+git submodule update --init # Prepare submodules
+mkdir build
+cd build
+echo "Building solvespace"
+cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_OPENMP=ON -DENABLE_LTO=ON
+make
+make install
+echo "Cleaning up..."
+cd ../..
+rm -rf solvespace
+echo "Done."
 
 # Cleanup for app layer
 chown -R 1000:0 $HOME
