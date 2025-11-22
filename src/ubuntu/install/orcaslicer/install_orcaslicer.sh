@@ -4,7 +4,7 @@ set -ex
 # Set variables
 APP_NAME="orcaslicer"
 INSTALL_DIR="/opt/${APP_NAME}"
-ICON_FILE="${INSTALL_DIR}/resources/OrcaSlicer.svg"
+ICON_FILE="${INSTALL_DIR}/resources/images/OrcaSlicer.svg"
 DESKTOP_FILENAME="OrcaSlicer.desktop"
 RELEASE_URL=$(curl -sX GET "https://api.github.com/repos/SoftFever/OrcaSlicer/releases/latest"     | awk '/url/{print $4;exit}' FS='[""]') && \
 DOWNLOAD_URL=$(curl -sX GET "${RELEASE_URL}" | awk '/browser_download_url.*Ubuntu2404/{print $4;exit}' FS='[""]') && \
@@ -20,13 +20,13 @@ echo "**** launcher ****"
 cat > "/usr/bin/${APP_NAME}" <<EOL
 #!/usr/bin/env bash
 export APPDIR=${INSTALL_DIR}
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 xterm -e ${INSTALL_DIR}/AppRun \"\${@}\"
 EOL
 
-
 #echo "#!/bin/bash" > /usr/bin/${APP_NAME}
 #echo "xterm -e ${INSTALL_DIR}/AppRun \"\${@}\"" >> /usr/bin/${APP_NAME}
-#chmod +x /usr/bin/${APP_NAME}
+chmod +x /usr/bin/${APP_NAME}
 
 sed -i 's@^Exec=.*@Exec=/usr/bin/'"${APP_NAME}"'@g' ${INSTALL_DIR}/${DESKTOP_FILENAME}
 sed -i 's@^Icon=.*@Icon='"${ICON_FILE}"'@g' ${INSTALL_DIR}/${DESKTOP_FILENAME}
