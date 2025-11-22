@@ -1,0 +1,44 @@
+ARG BASE_TAG="1.18.0-rolling-weekly"
+ARG BASE_IMAGE="core-ubuntu-noble"
+FROM kasmweb/${BASE_IMAGE}:${BASE_TAG}
+
+USER root
+
+ENV HOME=/home/kasm-default-profile
+ENV STARTUPDIR=/dockerstartup
+ENV INST_SCRIPTS=${STARTUPDIR}/install
+WORKDIR $HOME
+
+
+######### Customize Container Here ###########
+
+ARG APP_NAME="orcaslicer"
+
+COPY ./src/ubuntu/install/${APP_NAME} ${INST_SCRIPTS}/${APP_NAME}/
+RUN bash ${INST_SCRIPTS}/${APP_NAME}/install_${APP_NAME}.sh  && rm -rf ${INST_SCRIPTS}/${APP_NAME}/
+
+# Build the custom start script
+COPY ./src/ubuntu/common/custom_startup_pre.sh.inc ${STARTUPDIR}/custom_startup_pre.sh.inc
+COPY ./src/ubuntu/common/custom_startup_post.sh.inc ${STARTUPDIR}/custom_startup_post.sh.inc
+COPY ./src/ubuntu/install/${APP_NAME}/custom_startup_part.sh.inc ${STARTUPDIR}/custom_startup_part.sh.inc
+RUN bash -c cat ${STARTUPDIR}/custom_startup_{pre,part,post}.sh.inc >> ${STARTUPDIR}/custom_startup.sh
+RUN rm ${STARTUPDIR}/custom_startup_*.sh.inc
+RUN chmod +x ${STARTUPDIR}/custom_startup.sh
+RUN chmod 755 ${STARTUPDIR}/custom_startup.sh
+
+# Update the desktop environment to be optimized for a single application
+RUN cp ${HOME}/.config/xfce4/xfconf/single-application-xfce-perchannel-xml/* ${HOME}/.config/xfce4/xfconf/xfce-perchannel-xml/
+RUN cp /usr/share/backgrounds/bg_kasm.png /usr/share/backgrounds/bg_default.png
+RUN apt-get remove -y xfce4-panel
+
+
+######### End Customizations ###########
+
+
+RUN chown 1000:0 $HOME
+
+ENV HOME=/home/kasm-user
+WORKDIR ${HOME}
+RUN mkdir -p ${HOME} && chown -R 1000:0 ${HOME}
+
+USER 1000
