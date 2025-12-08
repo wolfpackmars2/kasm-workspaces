@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -ex
-START_COMMAND="/usr/local/bin/solvespace"
+START_COMMAND="/usr/local/bin/solvespace-qt"
 PGREP="solvespace"
 #export MAXIMIZE="true"
-export MAXIMAIZE="false"
+export MAXIMIZE="false"
 export MAXIMIZE_NAME="SolveSpace"
 MAXIMIZE_SCRIPT=$STARTUPDIR/maximize_window.sh
 DEFAULT_ARGS=""
