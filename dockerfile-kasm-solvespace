@@ -16,6 +16,10 @@ RUN apt-get update \
     && apt-get install -y sudo \
     && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
+# Install Ping
+COPY ./src/ubuntu/install/ping ${INST_SCRIPTS}/ping/
+RUN bash ${INST_SCRIPTS}/ping/install_ping.sh && rm -rf ${INST_SCRIPTS}/ping/
+
 # Install Solvespace
 COPY ./src/ubuntu/install/solvespace $INST_SCRIPTS/solvespace/
 RUN bash $INST_SCRIPTS/solvespace/install_solvespace.sh  && rm -rf $INST_SCRIPTS/solvespace/
@@ -36,6 +40,10 @@ ENV QT_QPA_PLATFORMTHEME=gtk3
 #RUN cp $HOME/.config/xfce4/xfconf/single-application-xfce-perchannel-xml/* $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
 #RUN cp /usr/share/backgrounds/bg_kasm.png /usr/share/backgrounds/bg_default.png
 #RUN apt-get remove -y xfce4-panel
+
+### Cleanup job
+COPY ./src/ubuntu/install/cleanup $INST_SCRIPTS/cleanup/
+RUN bash $INST_SCRIPTS/cleanup/cleanup.sh && rm -rf $INST_SCRIPTS/cleanup/
 
 
 ######### End Customizations ###########
