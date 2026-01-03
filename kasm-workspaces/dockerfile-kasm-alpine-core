@@ -1,0 +1,59 @@
+ARG BASE_TAG="1.18.0"
+ARG BASE_IMAGE="core-alpine-321"
+FROM kasmweb/${BASE_IMAGE}:${BASE_TAG}
+USER root
+
+ARG TZ='America/Chicago'
+
+# ENV DISTRO=alpine321
+ENV HOME=/home/kasm-default-profile
+#ENV STARTUPDIR=/dockerstartup
+# ENV INST_SCRIPTS=$STARTUPDIR/install
+WORKDIR $HOME
+
+
+# Description: Adds sudo to kasm alpine core image
+
+######### Customize Container Here ###########
+
+# Enable SUDO
+#RUN apt-get update \
+#    && apt-get install -y sudo \
+#    && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+RUN echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+# Install Solvespace
+#COPY ./src/ubuntu/install/solvespace $INST_SCRIPTS/solvespace/
+#RUN bash $INST_SCRIPTS/solvespace/install_solvespace.sh  && rm -rf $INST_SCRIPTS/solvespace/
+
+#COPY ./src/ubuntu/install/solvespace/custom_startup.sh $STARTUPDIR/custom_startup.sh
+#RUN chmod +x $STARTUPDIR/custom_startup.sh
+#RUN chmod 755 $STARTUPDIR/custom_startup.sh
+
+# Set QT 5+ app UI to match system theme
+# https://wiki.archlinux.org/title/Uniform_look_for_Qt_and_GTK_applications#QGtk3Style
+#ENV QT_QPA_PLATFORMTHEME=gtk3
+
+# Set dark theme
+#RUN xfconf-query -c xsettings -p /Net/ThemeName -s "Greybird-dark" \
+#    && xfconf-query -c xfwm4 -p /general/theme -s "Greybird-dark"
+
+# Update the desktop environment to be optimized for a single application
+#RUN cp $HOME/.config/xfce4/xfconf/single-application-xfce-perchannel-xml/* $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
+#RUN cp /usr/share/backgrounds/bg_kasm.png /usr/share/backgrounds/bg_default.png
+#RUN apt-get remove -y xfce4-panel
+
+#RUN $STARTUPDIR/set_user_permission.sh $HOME
+#RUN rm -f /etc/X11/xinit/Xclients
+#RUN mkdir -p /home/kasm-user
+
+
+######### End Customizations ###########
+
+
+#RUN chown 1000:0 $HOME
+
+ENV HOME=/home/kasm-user
+WORKDIR $HOME
+#RUN mkdir -p $HOME && chown -R 1000:0 $HOME
+
+USER 1000
